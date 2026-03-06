@@ -75,7 +75,6 @@ const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
-/* HEART */
 
 function heart(t){
 return{
@@ -111,7 +110,6 @@ symbol:"star"
 
 let explode=false;
 
-/* ANIMATION */
 
 function animate(){
 
@@ -156,15 +154,14 @@ requestAnimationFrame(animate);
 
 animate();
 
-/* TEXT */
 
-const message=`We met not so long ago,
+const message=`we met not so long ago,
 
 but somehow
 you already made the world
 feel a little more beautiful.
 
-And I just wanted you to know that.`
+and i just wanted you to know that.`
 
 function typeText(){
 
@@ -182,7 +179,6 @@ if(i>=message.length) clearInterval(interval);
 
 }
 
-/* HEART EXPLOSION */
 
 setTimeout(()=>{
 
@@ -207,7 +203,6 @@ setTimeout(typeText,1000);
 
 },8000);
 
-/* COMETS */
 
 function comet(){
 
@@ -237,7 +232,6 @@ if(y>canvas.height) clearInterval(interval);
 
 setInterval(comet,2000);
 
-/* FIREWORKS */
 
 canvas.addEventListener("click",e=>{
 
@@ -261,13 +255,11 @@ symbol:"star"
 
 }
 
-/* start music on first click */
 
 startMusic();
 
 });
 
-/* MUSIC */
 
 let musicStarted=false;
 
