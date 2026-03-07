@@ -28,22 +28,17 @@ left:0;
 .text{
 
 position:absolute;
-
 top:50%;
 left:50%;
-
 transform:translate(-50%,-50%);
 
 text-align:center;
 
 width:85%;
-
 max-width:600px;
 
 font-size:clamp(18px,4vw,32px);
-
 line-height:1.7;
-
 letter-spacing:0.5px;
 
 padding:10px;
@@ -81,7 +76,6 @@ text-shadow:
 <body>
 
 <canvas id="canvas"></canvas>
-
 <div class="text" id="text"></div>
 
 <audio id="music" src="music.mp3"></audio>
@@ -94,6 +88,11 @@ const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
+/* colors */
+
+const starColors=["white","#ff9acb","#ff6fae","#ffd1e6"];
+
+/* heart formula */
 
 function heart(t){
 return{
@@ -104,7 +103,9 @@ y:-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
 
 let particles=[];
 
-for(let i=0;i<900;i++){
+/* more stars */
+
+for(let i=0;i<1100;i++){
 
 let t=Math.random()*Math.PI*2;
 let h=heart(t);
@@ -121,7 +122,9 @@ vx:(Math.random()-0.5)*3,
 vy:(Math.random()-0.5)*3,
 
 heart:true,
-symbol:"star"
+symbol:"star",
+
+color:starColors[Math.floor(Math.random()*starColors.length)]
 
 });
 
@@ -129,6 +132,7 @@ symbol:"star"
 
 let explode=false;
 
+/* animation */
 
 function animate(){
 
@@ -152,15 +156,14 @@ p.y+=p.vy;
 if(p.symbol==="heart"){
 
 ctx.font="10px Arial";
+ctx.fillStyle=p.color;
 ctx.fillText("❤",p.x,p.y);
 
 }else{
 
-let colors=["white","#ff9acb","#ff6fae","#ffd1e6"];
-
 ctx.beginPath();
 ctx.arc(p.x,p.y,1.6,0,Math.PI*2);
-ctx.fillStyle=p.heart?"rgb(255,90,120)":colors[Math.floor(Math.random()*colors.length)];
+ctx.fillStyle=p.color;
 ctx.fill();
 
 }
@@ -173,6 +176,7 @@ requestAnimationFrame(animate);
 
 animate();
 
+/* message */
 
 const message=`we met not so long ago,
 
@@ -198,6 +202,7 @@ if(i>=message.length) clearInterval(interval);
 
 }
 
+/* slower explosion */
 
 setTimeout(()=>{
 
@@ -207,14 +212,12 @@ particles.forEach(p=>{
 
 p.heart=false;
 
-p.vx=(Math.random()-0.5)*2.5;
-p.vy=(Math.random()-0.5)*2.5;
+/* slower explosion */
 
-if(Math.random()<0.25){
-p.symbol="heart";
-}else{
-p.symbol="star";
-}
+p.vx=(Math.random()-0.5)*1.5;
+p.vy=(Math.random()-0.5)*1.5;
+
+p.symbol=Math.random()<0.25?"heart":"star";
 
 });
 
@@ -222,6 +225,7 @@ setTimeout(typeText,1000);
 
 },8000);
 
+/* more comets */
 
 function comet(){
 
@@ -231,13 +235,13 @@ let y=0;
 let vx=(Math.random()-0.5)*2;
 let vy=7;
 
+let color=Math.random()>0.5?"white":"#ff9acb";
+
 let interval=setInterval(()=>{
 
 ctx.beginPath();
 ctx.arc(x,y,2,0,Math.PI*2);
-
-ctx.fillStyle=Math.random()>0.5?"white":"#ff9acb";
-
+ctx.fillStyle=color;
 ctx.fill();
 
 x+=vx;
@@ -249,10 +253,13 @@ if(y>canvas.height) clearInterval(interval);
 
 }
 
-setInterval(comet,2000);
+setInterval(comet,1200);
 
+/* fireworks */
 
 canvas.addEventListener("click",e=>{
+
+let heartFirework=Math.random()<0.5;
 
 for(let i=0;i<40;i++){
 
@@ -268,17 +275,20 @@ vx:(Math.random()-0.5)*6,
 vy:(Math.random()-0.5)*6,
 
 heart:false,
-symbol:"star"
+
+symbol:heartFirework?"heart":"star",
+
+color:starColors[Math.floor(Math.random()*starColors.length)]
 
 });
 
 }
 
-
 startMusic();
 
 });
 
+/* music */
 
 let musicStarted=false;
 
