@@ -31,11 +31,14 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
+
 width:85%;
 max-width:600px;
+
 font-size:clamp(18px,4vw,32px);
 line-height:1.7;
 letter-spacing:0.5px;
+
 padding:10px;
 
 animation:glow 4s ease-in-out infinite alternate;
@@ -46,21 +49,8 @@ text-shadow:
 }
 
 @keyframes glow{
-
-0%{
-opacity:0.6;
-text-shadow:
-0 0 6px rgba(255,255,255,0.2),
-0 0 10px rgba(255,120,150,0.1);
-}
-
-100%{
-opacity:1;
-text-shadow:
-0 0 14px rgba(255,255,255,0.7),
-0 0 40px rgba(255,120,150,0.4);
-}
-
+0%{opacity:0.6;}
+100%{opacity:1;}
 }
 
 </style>
@@ -83,6 +73,14 @@ canvas.height=window.innerHeight;
 
 const colors=["white","#ff9acb","#ff6fae","#ffd1e6"];
 
+let particles=[];
+let preStars=[];
+
+let explode=false;
+let galaxy=false;
+
+/* heart formula */
+
 function heart(t){
 return{
 x:16*Math.pow(Math.sin(t),3),
@@ -90,11 +88,9 @@ y:-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
 };
 }
 
-let particles=[];
-let explode=false;
-let galaxy=false;
+/* create heart */
 
-for(let i=0;i<700;i++){
+for(let i=0;i<600;i++){
 
 let t=Math.random()*Math.PI*2;
 let h=heart(t);
@@ -107,23 +103,27 @@ y:Math.random()*canvas.height,
 tx:canvas.width/2+h.x*13,
 ty:canvas.height/2+h.y*13,
 
-vx:(Math.random()-0.5)*3,
-vy:(Math.random()-0.5)*3,
+vx:(Math.random()-0.5)*2,
+vy:(Math.random()-0.5)*2,
 
 type:"star",
 
 color:colors[Math.floor(Math.random()*colors.length)],
 
-twinkle:Math.random()*6.28,
-twinkleSpeed:Math.random()*0.02+0.01
+twinkle:Math.random()*6,
+twinkleSpeed:0.01+Math.random()*0.02,
+
+pulse:Math.random()*6
 
 });
 
 }
 
+/* animation */
+
 function animate(){
 
-ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillStyle="rgba(0,0,0,0.25)";
 ctx.fillRect(0,0,canvas.width,canvas.height);
 
 let cx=canvas.width/2;
@@ -133,8 +133,8 @@ for(let p of particles){
 
 if(!explode){
 
-p.x+=(p.tx-p.x)*0.03;
-p.y+=(p.ty-p.y)*0.03;
+p.x+=(p.tx-p.x)*0.04;
+p.y+=(p.ty-p.y)*0.04;
 
 }else{
 
@@ -144,6 +144,7 @@ let dx=p.x-cx;
 let dy=p.y-cy;
 
 let angle=Math.atan2(dy,dx)+0.002;
+
 let dist=Math.sqrt(dx*dx+dy*dy);
 
 p.x=cx+Math.cos(angle)*dist;
@@ -158,14 +159,24 @@ p.y+=p.vy;
 
 }
 
+/* hearts */
+
 if(p.type==="heart"){
 
+p.pulse+=0.05;
+
+let size=2+Math.sin(p.pulse)*0.7;
+
 ctx.beginPath();
-ctx.arc(p.x,p.y,2.3,0,Math.PI*2);
+ctx.arc(p.x,p.y,size,0,Math.PI*2);
 ctx.fillStyle="#ff6fae";
 ctx.fill();
 
-}else{
+}
+
+/* stars */
+
+else{
 
 p.twinkle+=p.twinkleSpeed;
 
@@ -184,12 +195,24 @@ ctx.globalAlpha=1;
 
 }
 
+/* stars before explosion */
+
+for(let s of preStars){
+
+ctx.beginPath();
+ctx.arc(s.x,s.y,2,0,Math.PI*2);
+ctx.fillStyle="white";
+ctx.fill();
+
+}
+
 requestAnimationFrame(animate);
 
 }
 
 animate();
 
+/* text */
 
 const message=`we met not so long ago,
 
@@ -215,9 +238,44 @@ if(i>=message.length) clearInterval(interval);
 
 }
 
+/* explosion */
+
 setTimeout(()=>{
 
 explode=true;
+
+/* convert clicked stars into fireworks */
+
+for(let s of preStars){
+
+for(let i=0;i<25;i++){
+
+particles.push({
+
+x:s.x,
+y:s.y,
+
+vx:(Math.random()-0.5)*6,
+vy:(Math.random()-0.5)*6,
+
+firework:true,
+
+type:Math.random()<0.5?"heart":"star",
+
+color:colors[Math.floor(Math.random()*colors.length)],
+
+twinkle:Math.random()*6,
+twinkleSpeed:0.02,
+
+pulse:Math.random()*6
+
+});
+
+}
+
+}
+
+preStars=[];
 
 for(let p of particles){
 
@@ -234,10 +292,11 @@ setTimeout(()=>{
 
 galaxy=true;
 
-},15000);
+},14000);
 
 },8000);
 
+/* comets */
 
 function comet(){
 
@@ -261,16 +320,26 @@ y+=vy;
 
 if(y>canvas.height) clearInterval(interval);
 
-},25);
+},30);
 
 }
 
-setInterval(comet,2200);
+setInterval(comet,2500);
 
+/* click interaction */
 
 canvas.addEventListener("click",e=>{
 
-for(let i=0;i<35;i++){
+if(!explode){
+
+preStars.push({
+x:e.clientX,
+y:e.clientY
+});
+
+}else{
+
+for(let i=0;i<30;i++){
 
 particles.push({
 
@@ -286,10 +355,14 @@ type:Math.random()<0.5?"heart":"star",
 
 color:colors[Math.floor(Math.random()*colors.length)],
 
-twinkle:Math.random()*6.28,
-twinkleSpeed:Math.random()*0.02+0.01
+twinkle:Math.random()*6,
+twinkleSpeed:0.02,
+
+pulse:Math.random()*6
 
 });
+
+}
 
 }
 
@@ -297,6 +370,7 @@ startMusic();
 
 });
 
+/* music */
 
 let musicStarted=false;
 
