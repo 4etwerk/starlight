@@ -15,7 +15,6 @@ body{
 margin:0;
 overflow:hidden;
 background:black;
-color:white;
 font-family:"Playfair Display",serif;
 }
 
@@ -31,26 +30,20 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-
 width:85%;
 max-width:600px;
-
 font-size:clamp(18px,4vw,32px);
 line-height:1.7;
 letter-spacing:0.5px;
-
 padding:10px;
+color:white;
 
 animation:glow 4s ease-in-out infinite alternate;
-
-text-shadow:
-0 0 8px rgba(255,255,255,0.3),
-0 0 25px rgba(255,120,150,0.25);
 }
 
 @keyframes glow{
-0%{opacity:0.6;}
-100%{opacity:1;}
+0%{opacity:0.6}
+100%{opacity:1}
 }
 
 </style>
@@ -60,7 +53,6 @@ text-shadow:
 
 <canvas id="canvas"></canvas>
 <div class="text" id="text"></div>
-
 <audio id="music" src="music.mp3"></audio>
 
 <script>
@@ -71,7 +63,7 @@ const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
-const colors=["white","#ff9acb","#ff6fae","#ffd1e6"];
+const colors=["white","#ff9acb","#ffd1e6"];
 
 let particles=[];
 let preStars=[];
@@ -79,7 +71,7 @@ let preStars=[];
 let explode=false;
 let galaxy=false;
 
-/* heart formula */
+/* heart equation */
 
 function heart(t){
 return{
@@ -90,7 +82,7 @@ y:-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
 
 /* create heart */
 
-for(let i=0;i<600;i++){
+for(let i=0;i<550;i++){
 
 let t=Math.random()*Math.PI*2;
 let h=heart(t);
@@ -100,8 +92,8 @@ particles.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 
-tx:canvas.width/2+h.x*13,
-ty:canvas.height/2+h.y*13,
+tx:canvas.width/2+h.x*12,
+ty:canvas.height/2+h.y*12,
 
 vx:(Math.random()-0.5)*2,
 vy:(Math.random()-0.5)*2,
@@ -110,12 +102,46 @@ type:"star",
 
 color:colors[Math.floor(Math.random()*colors.length)],
 
-twinkle:Math.random()*6,
-twinkleSpeed:0.01+Math.random()*0.02,
-
-pulse:Math.random()*6
+twinkle:Math.random()*6
 
 });
+
+}
+
+/* draw heart */
+
+function drawHeart(x,y,size){
+
+ctx.beginPath();
+
+ctx.moveTo(x,y);
+
+ctx.bezierCurveTo(
+x,y-size,
+x-size,y-size,
+x-size,y
+);
+
+ctx.bezierCurveTo(
+x-size,y+size,
+x,y+size*1.3,
+x,y+size*1.8
+);
+
+ctx.bezierCurveTo(
+x,y+size*1.3,
+x+size,y+size,
+x+size,y
+);
+
+ctx.bezierCurveTo(
+x+size,y-size,
+x,y-size,
+x,y
+);
+
+ctx.fillStyle="#ff6fae";
+ctx.fill();
 
 }
 
@@ -144,7 +170,6 @@ let dx=p.x-cx;
 let dy=p.y-cy;
 
 let angle=Math.atan2(dy,dx)+0.002;
-
 let dist=Math.sqrt(dx*dx+dy*dy);
 
 p.x=cx+Math.cos(angle)*dist;
@@ -159,30 +184,17 @@ p.y+=p.vy;
 
 }
 
-/* hearts */
-
 if(p.type==="heart"){
 
-p.pulse+=0.05;
+drawHeart(p.x,p.y,2);
 
-let size=2+Math.sin(p.pulse)*0.7;
+}else{
 
-ctx.beginPath();
-ctx.arc(p.x,p.y,size,0,Math.PI*2);
-ctx.fillStyle="#ff6fae";
-ctx.fill();
-
-}
-
-/* stars */
-
-else{
-
-p.twinkle+=p.twinkleSpeed;
+p.twinkle+=0.02;
 
 let alpha=(Math.sin(p.twinkle)+1)/2;
 
-ctx.globalAlpha=0.4+alpha*0.6;
+ctx.globalAlpha=0.5+alpha*0.5;
 
 ctx.beginPath();
 ctx.arc(p.x,p.y,1.5,0,Math.PI*2);
@@ -195,7 +207,7 @@ ctx.globalAlpha=1;
 
 }
 
-/* stars before explosion */
+/* pre-click stars */
 
 for(let s of preStars){
 
@@ -244,30 +256,23 @@ setTimeout(()=>{
 
 explode=true;
 
-/* convert clicked stars into fireworks */
+/* convert pre stars */
 
 for(let s of preStars){
 
-for(let i=0;i<25;i++){
+for(let i=0;i<18;i++){
 
 particles.push({
 
 x:s.x,
 y:s.y,
 
-vx:(Math.random()-0.5)*6,
-vy:(Math.random()-0.5)*6,
+vx:(Math.random()-0.5)*5,
+vy:(Math.random()-0.5)*5,
 
 firework:true,
 
-type:Math.random()<0.5?"heart":"star",
-
-color:colors[Math.floor(Math.random()*colors.length)],
-
-twinkle:Math.random()*6,
-twinkleSpeed:0.02,
-
-pulse:Math.random()*6
+type:"heart"
 
 });
 
@@ -277,12 +282,14 @@ pulse:Math.random()*6
 
 preStars=[];
 
+/* main explosion */
+
 for(let p of particles){
 
-p.vx=(Math.random()-0.5)*1.2;
-p.vy=(Math.random()-0.5)*1.2;
+p.vx=(Math.random()-0.5)*1.1;
+p.vy=(Math.random()-0.5)*1.1;
 
-p.type=Math.random()<0.6?"heart":"star";
+p.type=Math.random()<0.75?"heart":"star";
 
 }
 
@@ -306,13 +313,11 @@ let y=0;
 let vx=(Math.random()-0.5)*2;
 let vy=6;
 
-let color=Math.random()>0.5?"white":"#ff9acb";
-
 let interval=setInterval(()=>{
 
 ctx.beginPath();
 ctx.arc(x,y,2,0,Math.PI*2);
-ctx.fillStyle=color;
+ctx.fillStyle=Math.random()>0.5?"white":"#ff9acb";
 ctx.fill();
 
 x+=vx;
@@ -339,26 +344,19 @@ y:e.clientY
 
 }else{
 
-for(let i=0;i<30;i++){
+for(let i=0;i<22;i++){
 
 particles.push({
 
 x:e.clientX,
 y:e.clientY,
 
-vx:(Math.random()-0.5)*6,
-vy:(Math.random()-0.5)*6,
+vx:(Math.random()-0.5)*5,
+vy:(Math.random()-0.5)*5,
 
 firework:true,
 
-type:Math.random()<0.5?"heart":"star",
-
-color:colors[Math.floor(Math.random()*colors.length)],
-
-twinkle:Math.random()*6,
-twinkleSpeed:0.02,
-
-pulse:Math.random()*6
+type:Math.random()<0.5?"heart":"star"
 
 });
 
@@ -380,10 +378,7 @@ if(musicStarted) return;
 
 musicStarted=true;
 
-let m=document.getElementById("music");
-
-m.volume=1;
-m.play();
+document.getElementById("music").play();
 
 }
 
