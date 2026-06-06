@@ -24,35 +24,12 @@ top:0;
 left:0;
 }
 
-.text{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-width:85%;
-max-width:600px;
-font-size:clamp(18px,4vw,32px);
-line-height:1.7;
-letter-spacing:0.5px;
-padding:10px;
-color:white;
-
-animation:glow 4s ease-in-out infinite alternate;
-}
-
-@keyframes glow{
-0%{opacity:0.6}
-100%{opacity:1}
-}
-
 </style>
 </head>
 
 <body>
 
 <canvas id="canvas"></canvas>
-<div class="text" id="text"></div>
 <audio id="music" src="music.mp3"></audio>
 
 <script>
@@ -70,8 +47,6 @@ let preStars=[];
 
 let explode=false;
 let galaxy=false;
-
-/* heart equation */
 
 function heart(t){
 return{
@@ -114,11 +89,7 @@ ctx.beginPath();
 
 ctx.moveTo(x,y);
 
-ctx.bezierCurveTo(
-x,y-size,
-x-size,y-size,
-x-size,y
-);
+ctx.bezierCurveTo(x,y-size,x-size,y-size,x-size,y);
 
 ctx.bezierCurveTo(
 x-size,y+size,
@@ -180,6 +151,7 @@ p.y+=p.vy;
 }
 
 }
+
 
 if(p.type==="heart"){
 
@@ -248,7 +220,6 @@ type:"heart"
 
 preStars=[];
 
-
 for(let p of particles){
 
 p.vx=(Math.random()-0.5)*1.1;
@@ -258,7 +229,6 @@ p.type=Math.random()<0.75?"heart":"star";
 
 }
 
-setTimeout(typeText,1200);
 
 setTimeout(()=>{
 
@@ -266,8 +236,8 @@ galaxy=true;
 
 },14000);
 
-},8000);
 
+},8000);
 
 function comet(){
 
@@ -294,7 +264,6 @@ if(y>canvas.height) clearInterval(interval);
 }
 
 setInterval(comet,2500);
-
 
 canvas.addEventListener("click",e=>{
 
@@ -330,7 +299,6 @@ type:Math.random()<0.5?"heart":"star"
 startMusic();
 
 });
-
 
 let musicStarted=false;
 
