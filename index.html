@@ -80,7 +80,6 @@ y:-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))
 };
 }
 
-/* create heart */
 
 for(let i=0;i<550;i++){
 
@@ -108,7 +107,6 @@ twinkle:Math.random()*6
 
 }
 
-/* draw heart */
 
 function drawHeart(x,y,size){
 
@@ -145,7 +143,6 @@ ctx.fill();
 
 }
 
-/* animation */
 
 function animate(){
 
@@ -207,7 +204,6 @@ ctx.globalAlpha=1;
 
 }
 
-/* pre-click stars */
 
 for(let s of preStars){
 
@@ -224,39 +220,9 @@ requestAnimationFrame(animate);
 
 animate();
 
-/* text */
-
-const message=`we met not so long ago,
-
-but somehow
-you already made the world
-feel a little more beautiful.
-
-and i just wanted you to know that.`
-
-function typeText(){
-
-let i=0;
-let el=document.getElementById("text");
-
-let interval=setInterval(()=>{
-
-el.innerHTML+=message[i];
-i++;
-
-if(i>=message.length) clearInterval(interval);
-
-},50);
-
-}
-
-/* explosion */
-
 setTimeout(()=>{
 
 explode=true;
-
-/* convert pre stars */
 
 for(let s of preStars){
 
@@ -282,7 +248,6 @@ type:"heart"
 
 preStars=[];
 
-/* main explosion */
 
 for(let p of particles){
 
@@ -303,7 +268,6 @@ galaxy=true;
 
 },8000);
 
-/* comets */
 
 function comet(){
 
@@ -331,7 +295,6 @@ if(y>canvas.height) clearInterval(interval);
 
 setInterval(comet,2500);
 
-/* click interaction */
 
 canvas.addEventListener("click",e=>{
 
@@ -368,7 +331,6 @@ startMusic();
 
 });
 
-/* music */
 
 let musicStarted=false;
 
